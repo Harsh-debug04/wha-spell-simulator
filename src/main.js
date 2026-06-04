@@ -91,6 +91,36 @@ function setupControls() {
     recompute();
   });
 
+  elements.tutorialToggle.addEventListener("change", () => {
+    const canvas = elements.tutorialOverlayCanvas;
+    const ctx = canvas.getContext("2d");
+    if (!elements.tutorialToggle.checked) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      return;
+    }
+
+    // Draw a mock tutorial template on the overlay
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const radius = 200;
+
+    ctx.strokeStyle = "rgba(100, 200, 255, 0.5)";
+    ctx.lineWidth = 10;
+    ctx.setLineDash([15, 15]);
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Draw a center element (Fire)
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - radius * 0.5);
+    ctx.lineTo(cx - radius * 0.3, cy + radius * 0.3);
+    ctx.lineTo(cx + radius * 0.3, cy + radius * 0.3);
+    ctx.closePath();
+    ctx.stroke();
+  });
+
   elements.guidesToggle.addEventListener("change", () => {
     updateSummary({ elements, store, capture, pipeline, spellIR });
     updateDiagnostics({ elements, store, pipeline, spellIR });

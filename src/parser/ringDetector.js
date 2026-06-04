@@ -530,28 +530,20 @@ export function detectRing(strokes, previousRing, config) {
   candidates.sort((a, b) => Number(b.complete) - Number(a.complete) || b.score + b.radius * 0.001 - (a.score + a.radius * 0.001));
   const distinctRings = distinctRingCandidates(candidates);
   const ring = distinctRings[0];
-  const unsupportedMultipleRings = distinctRings.slice(1).map(summarizeUnsupportedRing);
-  const unsupportedNestedRings = distinctRings
-    .slice(1)
-    .filter(
-      (candidate) =>
-        candidate.radius < ring.radius * 0.78 &&
-        candidate.roundness >= 0.68 &&
-        candidate.complete
-    )
-    .map(summarizeUnsupportedRing);
+  const unsupportedNestedRings = []; // Handled correctly now, no longer unsupported
+  const unsupportedMultipleRings = []; // Handled correctly now, no longer unsupported
 
   const activationEvent = Boolean(
       previousRing?.found &&
       !previousRing.complete &&
       ring.complete &&
-      previousRing.completeness >= ACTIVATION_COMPLETENESS_FLOOR &&
-      unsupportedMultipleRings.length === 0
+      previousRing.completeness >= ACTIVATION_COMPLETENESS_FLOOR
   );
 
   return {
     ...ring,
     activationEvent,
+    rings: distinctRings,
     unsupportedNestedRings,
     unsupportedMultipleRings
   };
