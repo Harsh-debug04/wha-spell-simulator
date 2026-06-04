@@ -7,6 +7,8 @@ export function getElements() {
     undoButton: document.querySelector("#undoButton"),
     clearButton: document.querySelector("#clearButton"),
     guidesToggle: document.querySelector("#guidesToggle"),
+    tutorialToggle: document.querySelector("#tutorialToggle"),
+    tutorialOverlayCanvas: document.querySelector("#tutorialOverlayCanvas"),
     diagnosticsToggle: document.querySelector("#diagnosticsToggle"),
     dictionaryRootPanel: document.querySelector("#dictionaryRootPanel"),
     diagnosticRootPanel: document.querySelector("#diagnosticRootPanel"),

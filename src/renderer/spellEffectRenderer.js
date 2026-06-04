@@ -3,6 +3,7 @@ import { drawWaterEffect } from "./effects/waterEffect.js";
 import { drawWindEffect } from "./effects/windEffect.js";
 import { drawEarthEffect } from "./effects/earthEffect.js";
 import { drawLightEffect } from "./effects/lightEffect.js";
+import { drawCursedEffect } from "./effects/cursedEffect.js";
 import { resetParticleState } from "./effects/effectUtils.js";
 import { clamp } from "../utils/geometry.js";
 
@@ -31,7 +32,8 @@ const EFFECTS = {
   water: drawWaterEffect,
   wind: drawWindEffect,
   earth: drawEarthEffect,
-  light: drawLightEffect
+  light: drawLightEffect,
+  cursed: drawCursedEffect
 };
 
 function spellDurationMs(spellIR) {

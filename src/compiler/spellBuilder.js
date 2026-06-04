@@ -11,7 +11,7 @@ import { calculateSpellQuality, calculateSpellStability } from "./spellQuality.j
 
 const PRIMARY_SIGIL_AMBIGUITY_GAP = 0.05;
 
-const SUPPORTED_ELEMENTS = new Set(["fire", "water", "wind", "earth", "light"]);
+const SUPPORTED_ELEMENTS = new Set(["fire", "water", "wind", "earth", "light", "cursed"]);
 
 const SPELL_PARAMETER_TUNING = {
   focusBase: 0.46,
@@ -112,9 +112,7 @@ export function compileSpell({ glyphAST, config }) {
     return invalidSpell("No ring detected", glyphAST ?? { globalMetrics: {} });
   }
 
-  if (glyphAST.ring.unsupportedMultipleRings?.length) {
-    return invalidSpell("Multiple rings detected", glyphAST, [GLYPH_WARNINGS.unsupportedMultipleRings]);
-  }
+
 
   if (glyphAST.unsupportedMultipleSigils?.length) {
     return invalidSpell("Multiple sigils detected", glyphAST, [GLYPH_WARNINGS.unsupportedMultipleSigils]);

@@ -124,6 +124,8 @@ function updateFlowFireParticle(particle, flow, dt) {
   particle.age += dt;
   particle.x += particle.vx * dt;
   particle.y += particle.vy * dt;
+  particle.vy += 0.5 * dt; // Gravity simulation
+  particle.vx += 0.1 * dt; // Wind simulation
   particle.vx *= 0.992 - flow.convergence.progress * 0.045;
   particle.vy *= 0.992 - flow.convergence.progress * 0.045;
 }

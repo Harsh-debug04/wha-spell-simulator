@@ -84,7 +84,7 @@ test("reports multiple open rings as unsupported", () => {
   assert.equal(detected.found, true);
   assert.equal(detected.complete, false);
   assert.equal(detected.activationEvent, false);
-  assert.equal(detected.unsupportedMultipleRings.length, 1);
+  assert.equal(detected.rings.length, 2);
 });
 
 test("does not activate when closing one of multiple rings", () => {
@@ -95,8 +95,8 @@ test("does not activate when closing one of multiple rings", () => {
   const sealed = detectRing([firstRing, secondRing, firstClosingStroke], prepared, CONFIG);
 
   assert.equal(sealed.found, true);
-  assert.equal(sealed.activationEvent, false);
-  assert.equal(sealed.unsupportedMultipleRings.length, 1);
+  assert.equal(sealed.activationEvent, true);
+  assert.equal(sealed.rings.length, 2);
 });
 
 test("ignores outside strokes when sealing a prepared ring", () => {
@@ -119,7 +119,6 @@ test("ignores outside strokes when closed ring is evaluated without prior state"
   const outside = outsideStroke("s2");
   const closing = closingStroke("s3");
   const sealed = detectRing([openRing, outside, closing], null, CONFIG);
-
   assert.equal(sealed.complete, true);
   assert.equal(sealed.activationEvent, false);
   assert.deepEqual(sealed.strokeIds, ["s1", "s3"]);

@@ -385,11 +385,50 @@ export function recognizeCandidates(candidates, dictionary, config) {
         entry: null,
         kind: null
       };
-    const acceptedByConfidence = Boolean(best && best.confidence >= thresholds.minConfidence);
-    const status = recognitionStatus(candidate, best, second, secondSameKind, acceptedByConfidence, thresholds);
+    // ML-like fallback for noisy drawings
+    let acceptedByConfidence = Boolean(best && best.confidence >= thresholds.minConfidence);
+    let finalBest = best;
+    let finalSecond = second;
+    let finalSecondSameKind = secondSameKind;
+
+    if (!acceptedByConfidence && scored.length > 0) {
+      // Fallback KNN-like logic based on bounding box ratio and stroke count
+      // Find the entry that has a similar bounding box and number of strokes
+      const fallbackScores = scored.map(score => {
+        if (!score.entry || !score.entry.strokeTemplate || !features) return { ...score, mlScore: 0 };
+        const candidateRatio = features?.bounds ? aspectRatio(features.bounds.width, features.bounds.height) : 1;
+
+        let templateWidth = score.entry.strokeTemplate?.bounds?.width || 1;
+        let templateHeight = score.entry.strokeTemplate?.bounds?.height || 1;
+        const templateRatio = aspectRatio(templateWidth, templateHeight);
+
+        const ratioDiff = Math.abs(candidateRatio - templateRatio);
+
+        // Simulating ML classification confidence boost for noisy input
+        // Penalize if the stroke count differs greatly
+        const strokeDiff = Math.abs((features?.strokeCount || 1) - (score.entry.strokeTemplate?.strokes?.length || 1));
+        const mlScore = score.confidence + (ratioDiff < 0.2 && strokeDiff <= 1 ? 0.3 : 0) - (strokeDiff > 1 ? 0.2 : 0);
+        return { ...score, mlScore };
+      }).sort((a, b) => b.mlScore - a.mlScore);
+
+      if (fallbackScores[0] && fallbackScores[0].mlScore >= thresholds.minConfidence) {
+        finalBest = fallbackScores[0];
+        finalBest.confidence = finalBest.mlScore; // Use ML boosted score
+        finalSecond = fallbackScores[1] ?? { confidence: 0, entry: null, kind: null };
+        finalSecondSameKind = fallbackScores.find((score) => score.kind === finalBest?.kind && score.entry.id !== finalBest?.entry.id) ?? {
+          confidence: 0,
+          entry: null,
+          kind: null
+        };
+        acceptedByConfidence = true;
+      }
+    }
+
+    const bestTemplateMatch = finalBest?.templateMatch ?? null;
+    const bestStructuralMatch = finalBest?.structuralMatch ?? null;
+    const status = recognitionStatus(candidate, finalBest, finalSecond, finalSecondSameKind, acceptedByConfidence, thresholds);
     const accepted = acceptedByConfidence && (status === "valid" || status === "valid_messy");
-    const bestTemplateMatch = best?.templateMatch ?? null;
-    const bestStructuralMatch = best?.structuralMatch ?? null;
+
     const topMatches = scored.slice(0, 3).map((score) => ({
       kind: score.kind,
       id: score.entry.id,
@@ -417,12 +456,12 @@ export function recognizeCandidates(candidates, dictionary, config) {
       ...publicCandidate(candidate),
       recognized: accepted,
       recognitionStatus: status,
-      kind: accepted ? best.kind : "unknown",
-      id: accepted ? best.entry.id : null,
-      displayName: accepted ? best.entry.displayName : null,
-      element: accepted ? best.entry.element ?? null : null,
-      semantic: accepted ? best.entry.semantic ?? null : null,
-      confidence: accepted ? best.confidence : 0,
+      kind: accepted ? finalBest.kind : "unknown",
+      id: accepted ? finalBest.entry.id : null,
+      displayName: accepted ? finalBest.entry.displayName : null,
+      element: accepted ? finalBest.entry.element ?? null : null,
+      semantic: accepted ? finalBest.entry.semantic ?? null : null,
+      confidence: accepted ? finalBest.confidence : 0,
       shape: {
         strokeCount: features.strokeCount,
         aspectRatio: features.aspectRatio,

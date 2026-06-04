@@ -130,12 +130,8 @@ function warningList(ring, primarySigil, unsupportedMultipleSigils, unknowns, re
   } else if (!ring.complete) {
     warnings.push(GLYPH_WARNINGS.ringIncomplete);
   }
-  if (ring.unsupportedNestedRings?.length) {
-    warnings.push(GLYPH_WARNINGS.unsupportedNestedRing);
-  }
-  if (ring.unsupportedMultipleRings?.length) {
-    warnings.push(GLYPH_WARNINGS.unsupportedMultipleRings);
-  }
+
+
   if (unsupportedMultipleSigils.length) {
     warnings.push(GLYPH_WARNINGS.unsupportedMultipleSigils);
   }
