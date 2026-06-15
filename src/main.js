@@ -99,18 +99,27 @@ function setupControls() {
       return;
     }
 
-    // Draw a mock tutorial template on the overlay
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const cx = canvas.width / 2;
-    const cy = canvas.height / 2;
-    const radius = 200;
+    // Draw tutorial spell template on the overlay
+    if (!dictionary || !dictionary.sampleSpells) return;
+    const sample = dictionary.sampleSpells.find(s => s.id === "water_mirror") || dictionary.sampleSpells[0];
+    if (!sample || !sample.strokes) return;
 
     ctx.strokeStyle = "rgba(100, 200, 255, 0.5)";
     ctx.lineWidth = 10;
     ctx.setLineDash([15, 15]);
-    ctx.beginPath();
-    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-    ctx.stroke();
+
+    // Scale and draw
+    const scale = canvas.width;
+    sample.strokes.forEach(stroke => {
+      if (!stroke.length) return;
+      ctx.beginPath();
+      const first = stroke[0];
+      ctx.moveTo(first.x * scale, first.y * scale);
+      for(let i = 1; i < stroke.length; i++) {
+        ctx.lineTo(stroke[i].x * scale, stroke[i].y * scale);
+      }
+      ctx.stroke();
+    });
 
     // Draw a center element (Fire)
     ctx.beginPath();

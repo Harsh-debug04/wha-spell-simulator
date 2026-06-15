@@ -86,9 +86,9 @@ function drawCursedParticle(ctx, particle, flow, spellIR, opacity) {
   );
 
   // Purple/Black cursed coloring
-  gradient.addColorStop(0, \`rgba(150, 0, 255, \${alpha})\`);
-  gradient.addColorStop(0.5, \`rgba(50, 0, 80, \${alpha * 0.8})\`);
-  gradient.addColorStop(1, \`rgba(0, 0, 0, 0)\`);
+  gradient.addColorStop(0, `rgba(150, 0, 255, ${alpha})`);
+  gradient.addColorStop(0.5, `rgba(50, 0, 80, ${alpha * 0.8})`);
+  gradient.addColorStop(1, `rgba(0, 0, 0, 0)`);
 
   ctx.fillStyle = gradient;
   ctx.beginPath();
